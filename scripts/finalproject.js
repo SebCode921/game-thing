@@ -263,13 +263,13 @@ function spawnBoss(){
 
 function upgrade(){
     continueBTN.kill()
-lifeUpgradeBTN = game.add.button(1100, game.world.centerY, "hp", lifeUpgrade, this );
+lifeUpgradeBTN = game.add.button(1100, game.world.centerY, "hp", lifeUpgrade,);
     lifeUpgradeBTN.anchor.setTo(0.5,0.5);
 
-    damageUpgradeBTN = game.add.button(500, game.world.centerY, "dmg", damageUpgrade, this );
+    damageUpgradeBTN = game.add.button(500, game.world.centerY, "dmg", damageUpgrade, );
     damageUpgradeBTN.anchor.setTo(0.5,0.5);
 
-    speedUpgradeBTN = game.add.button(800, game.world.centerY, "spd", speedUpgrade, this );
+    speedUpgradeBTN = game.add.button(800, game.world.centerY, "spd", speedUpgrade, );
     speedUpgradeBTN.anchor.setTo(0.5,0.5);
 
 
@@ -302,4 +302,5 @@ speed+=100
 startGame()
 spawnBoss()
 }
+
 
