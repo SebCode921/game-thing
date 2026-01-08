@@ -73,6 +73,8 @@ var lifeUpgradeBTN;
 
 function create(){
 
+    mainMusic = game.add.audio('mainMusic');
+    mainMusic.play()
     
 var bg =game.add.sprite(0, 0, "titleBackground");
 bg.scale.setTo(1,0.8);
@@ -96,8 +98,7 @@ function startGame(){
     startBTN.visible = false;
 
     
-    mainMusic = game.add.audio('mainMusic');
-    mainMusic.play()
+    
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -301,3 +302,4 @@ speed+=100
 startGame()
 spawnBoss()
 }
+
