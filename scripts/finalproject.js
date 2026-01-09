@@ -81,7 +81,7 @@ var shootSFX;
 
 
 function create(){
-
+music = game.add.audio('mainMusic');
     
 var bg =game.add.sprite(0, 0, "titleBackground");
 bg.scale.setTo(1,0.8);
@@ -365,11 +365,10 @@ function respawn(){
 }
 
 function music(){
-    music = game.add.audio('mainMusic');
     
-
     music.play();
 }
+
 
 
 
