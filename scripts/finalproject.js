@@ -222,8 +222,7 @@ function fire() {
 
         game.physics.arcade.moveToPointer(bullet, bulletSpeed);
     }
-shootSFX = game.add.audio('shoot');
-    shootSFX.play()
+
 
 }
 
@@ -371,5 +370,6 @@ function music(){
 
     music.play();
 }
+
 
 
