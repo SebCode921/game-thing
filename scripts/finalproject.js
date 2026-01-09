@@ -6,6 +6,7 @@ function preload() {
 
     game.load.image('button', 'ressources/images/startButton.png');
     game.load.audio('mainMusic', 'ressources/music/mainTheme.mp3');
+    game.load.audio('shoot', 'ressources/music/shoot.wav');
     game.load.image('flyer', 'ressources/images/boss.png');
     game.load.image('bullet', 'ressources/images/ball.png');
     game.load.image('background', 'ressources/images/background.png');
@@ -14,6 +15,7 @@ function preload() {
     game.load.image('dmg', 'ressources/images/dmg.png');
     game.load.image('spd', 'ressources/images/spd.png');
     game.load.image('hp', 'ressources/images/hp.png');
+    game.load.image('arrow', 'ressources/images/arrow.png');
 
 }
 //main player
@@ -25,11 +27,11 @@ var up;
 var down;
 //everything to do with the shooting
 var bullets;
-var fireRate = 40;
+var fireRate = 100;
 var nextFire = 0;
-var bulletSpeed = 1000;
-var damage = 50;
-var speed = 1000;
+var bulletSpeed = 1800;
+var damage = 1;
+var speed = 750;
 //the boss
 var bosses;
 //random text stuff
@@ -39,7 +41,8 @@ var lifetxt
 var bossTxt;
 //player and boss life
 var life = 3;
-var bossLife = 500;
+var bossMultiplier = 50
+var bossLife = bossMultiplier
 //placeholder for boss
 var image;
 //check to see if player has pressed the start button
@@ -64,6 +67,12 @@ var damageUpgradeBTN;
 var speedUpgradeBTN;
 var lifeUpgradeBTN;
 
+var round = 1;
+
+var dead = false
+
+var shootSFX;
+
 
 
 
@@ -73,8 +82,6 @@ var lifeUpgradeBTN;
 
 function create(){
 
-    mainMusic = game.add.audio('mainMusic');
-    mainMusic.play()
     
 var bg =game.add.sprite(0, 0, "titleBackground");
 bg.scale.setTo(1,0.8);
@@ -84,7 +91,7 @@ logo.anchor.setTo(0.5,0.5);
 logo.scale.setTo(0.6,0.6);
 tween = game.add.tween(logo).to( { y: 200 }, 1000, Phaser.Easing.Bounce.Out, true);
     
-    startBTN = game.add.button(game.world.centerX, game.world.centerY, "button", startGame, );
+    startBTN = game.add.button(game.world.centerX, game.world.centerY, "button", startGame, music);
     startBTN.anchor.setTo(0.5,0.5);
     tween = game.add.tween(startBTN).to( { y: 500 }, 1000, Phaser.Easing.Bounce.Out, true);
 
@@ -93,7 +100,9 @@ tween = game.add.tween(logo).to( { y: 200 }, 1000, Phaser.Easing.Bounce.Out, tru
 }
 
 function startGame(){
-    game.add.sprite(0, 0, "background");
+   var gameBG = game.add.sprite(0, 0, "background");
+   gameBG.scale.setTo(2,2)
+    game.world.setBounds(0, 0, 2000, 2000);
     started = true
     startBTN.visible = false;
 
@@ -101,6 +110,7 @@ function startGame(){
     
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
+    
 
 bullets = game.add.group();
     bullets.enableBody = true;
@@ -114,7 +124,11 @@ bullets = game.add.group();
     game.physics.enable(sprite, Phaser.Physics.ARCADE);
     sprite.body.allowRotation = false;
     sprite.body.collideWorldBounds = true;
-    sprite.scale.setTo(3,3);
+    sprite.scale.setTo(2,2);
+    game.camera.follow(sprite, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
+    game.camera.scale.set(1); // 1 = normal, 1.2 = zoomed in
+
+    
 
     bosses = game.add.group();
     bosses.enableBody = true;
@@ -133,6 +147,10 @@ bullets = game.add.group();
     bossLifeString = 'BOSS LIFE : ';
     bossTxt = game.add.text(100, 10, bossLifeString + bossLife, { font: '40px Franklin Gothic Heavy', fill: '#fff' });
 
+    lifetxt.fixedToCamera = true;
+bossTxt.fixedToCamera = true;
+
+
     
 spawnBoss()
     
@@ -142,7 +160,15 @@ function update() {
 if (!started) return;
     
 
-    sprite.rotation = game.physics.arcade.angleToPointer(sprite);
+    var cam = game.camera;
+
+// Convert mouse position to world coordinates
+var mouseX = (game.input.activePointer.x / cam.scale.x) + cam.x;
+var mouseY = (game.input.activePointer.y / cam.scale.y) + cam.y;
+
+// Rotate sprite to face mouse
+sprite.rotation = game.physics.arcade.angleToXY(sprite, mouseX, mouseY);
+
 
     if (game.input.activePointer.isDown) {
         fire();
@@ -197,6 +223,8 @@ function fire() {
         game.physics.arcade.moveToPointer(bullet, bulletSpeed);
     }
 
+    shootSFX.play()
+
 }
 
 function render() {
@@ -225,11 +253,17 @@ function collisionHandler(bullet, boss) {
     if (bossLife <= 0) {
         boss.kill();
         sprite.kill();
+bullets.kill()
+       round++
 
+       bossLife= round * 50
+       
        
 
         continueBTN = game.add.button(game.world.centerX, game.world.centerY, "button", upgrade, this );
     continueBTN.anchor.setTo(0.5,0.5);
+    continueBTN.fixedToCamera = true;
+    continueBTN.cameraOffset.set(1100, game.height / 2);
     }
 }
 
@@ -238,12 +272,17 @@ function collisionHandlerPlayer(sprite, boss) {
 sprite.kill()
     life --;
 
+    respawn()
+
     lifetxt.text = lifeString + life
 
-    if (life == 0){
+    if (life === 0){
         sprite.kill();
         loseString = ' Game Over';
     loseTXT = game.add.text(500, 300, loseString, { font: '36px Franklin Gothic Heavy', fill: '#ff0000' });
+    }
+    if (life === 1){  
+        dead = true
     }
     
 
@@ -263,14 +302,23 @@ function spawnBoss(){
 
 function upgrade(){
     continueBTN.kill()
-lifeUpgradeBTN = game.add.button(1100, game.world.centerY, "hp", lifeUpgrade,);
+lifeUpgradeBTN = game.add.button(1100, game.world.centerY, "hp", lifeUpgrade, this );
     lifeUpgradeBTN.anchor.setTo(0.5,0.5);
+    lifeUpgradeBTN.fixedToCamera = true;
+    lifeUpgradeBTN.cameraOffset.set(1100, game.height / 2);
 
-    damageUpgradeBTN = game.add.button(500, game.world.centerY, "dmg", damageUpgrade, );
+    damageUpgradeBTN = game.add.button(500, game.world.centerY, "dmg", damageUpgrade, this );
     damageUpgradeBTN.anchor.setTo(0.5,0.5);
+    damageUpgradeBTN.fixedToCamera = true;
+    damageUpgradeBTN.cameraOffset.set(500, game.height / 2);
 
-    speedUpgradeBTN = game.add.button(800, game.world.centerY, "spd", speedUpgrade, );
+    speedUpgradeBTN = game.add.button(800, game.world.centerY, "spd", speedUpgrade, this );
     speedUpgradeBTN.anchor.setTo(0.5,0.5);
+    speedUpgradeBTN.fixedToCamera = true;
+    speedUpgradeBTN.cameraOffset.set(800, game.height / 2);
+
+    
+
 
 
     
@@ -280,7 +328,7 @@ function lifeUpgrade(){
 lifeUpgradeBTN.kill()
 damageUpgradeBTN.kill()
 speedUpgradeBTN.kill()
-life+=100
+life+=2
 startGame()
 spawnBoss()
 }
@@ -289,7 +337,7 @@ function damageUpgrade(){
     lifeUpgradeBTN.kill()
 damageUpgradeBTN.kill()
 speedUpgradeBTN.kill()
-damage+=100
+damage+=1
 startGame()
 spawnBoss()
 }
@@ -298,9 +346,28 @@ function speedUpgrade(){
     lifeUpgradeBTN.kill()
 damageUpgradeBTN.kill()
 speedUpgradeBTN.kill()
-speed+=100
+speed+=200
 startGame()
 spawnBoss()
 }
 
 
+function respawn(){
+    if (!dead){
+    sprite = game.add.sprite(400, 300, 'arrow');
+    sprite.anchor.set(0.5);
+    game.physics.enable(sprite, Phaser.Physics.ARCADE);
+    sprite.body.allowRotation = false;
+    sprite.body.collideWorldBounds = true;
+    sprite.scale.setTo(2,2);
+    game.camera.follow(sprite, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
+    game.camera.scale.set(1); // 1 = normal, 1.2 = zoomed in
+    }
+}
+
+function music(){
+    music = game.add.audio('mainMusic');
+    shootSFX = game.add.audio('shoot');
+
+    music.play();
+}
