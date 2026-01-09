@@ -81,7 +81,7 @@ var shootSFX;
 
 
 function create(){
-music = game.add.audio('mainMusic');
+
     
 var bg =game.add.sprite(0, 0, "titleBackground");
 bg.scale.setTo(1,0.8);
@@ -158,7 +158,8 @@ spawnBoss()
 
 function update() {
 if (!started) return;
-    
+    music = game.add.audio('mainMusic');
+     music.play();
 
     var cam = game.camera;
 
@@ -366,8 +367,9 @@ function respawn(){
 
 function music(){
     
-    music.play();
+   
 }
+
 
 
 
