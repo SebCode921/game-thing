@@ -16,6 +16,8 @@ function preload() {
     game.load.image('spd', 'ressources/images/spd.png');
     game.load.image('hp', 'ressources/images/hp.png');
     game.load.image('arrow', 'ressources/images/arrow.png');
+    game.load.image('upgrade', 'ressources/images/upgrade.png');
+
 
 }
 //main player
@@ -100,7 +102,7 @@ logo.anchor.setTo(0.5,0.5);
 logo.scale.setTo(0.6,0.6);
 tween = game.add.tween(logo).to( { y: 200 }, 1000, Phaser.Easing.Bounce.Out, true);
     
-    startBTN = game.add.button(game.world.centerX, game.world.centerY, "button", startGame, playMusic);
+    startBTN = game.add.button(game.world.centerX, game.world.centerY, "button", startGame,);
     startBTN.anchor.setTo(0.5,0.5);
     tween = game.add.tween(startBTN).to( { y: 500 }, 1000, Phaser.Easing.Bounce.Out, true);
 
@@ -127,6 +129,10 @@ bullets = game.add.group();
     bullets.createMultiple(50, 'bullet');
     bullets.setAll('checkWorldBounds', true);
     bullets.setAll('outOfBoundsKill', true);
+
+    // Prepare shooting sound (loop while mouse is held)
+    shootSFX = game.add.audio('shoot');
+    shootSFX.loop = true;
 
     sprite = game.add.sprite(400, 300, 'arrow');
     sprite.anchor.set(0.5);
@@ -191,7 +197,13 @@ sprite.rotation = game.physics.arcade.angleToXY(sprite, mouseX, mouseY);
 
     if (game.input.activePointer.isDown) {
         fire();
-        
+        if (shootSFX && !shootSFX.isPlaying) {
+            shootSFX.play();
+        }
+    } else {
+        if (shootSFX && shootSFX.isPlaying) {
+            shootSFX.stop();
+        }
     }
 
     game.physics.arcade.overlap(bullets, bosses, collisionHandler, null, this);
@@ -279,10 +291,10 @@ bullets.kill()
        
        
 
-        continueBTN = game.add.button(game.world.centerX, game.world.centerY, "button", upgrade, this );
+        continueBTN = game.add.button(game.world.centerX, game.world.centerY, "upgrade", upgrade, this );
     continueBTN.anchor.setTo(0.5,0.5);
     continueBTN.fixedToCamera = true;
-    continueBTN.cameraOffset.set(1100, game.height / 2);
+    continueBTN.cameraOffset.set(800, game.height / 2);
     }
 }
 
