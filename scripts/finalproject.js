@@ -2,7 +2,7 @@ var game = new Phaser.Game(1520, 750, Phaser.CANVAS, 'phaser-example', {preload:
 
 function preload() {
 
-    
+    //deploy
 
     game.load.image('button', 'ressources/images/startButton.png');
     game.load.audio('mainMusic', 'ressources/music/mainTheme.mp3');
@@ -402,3 +402,4 @@ function playMusic(){
 
     music.play();
 }
+
