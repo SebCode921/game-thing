@@ -2,7 +2,7 @@ var game = new Phaser.Game(1520, 750, Phaser.CANVAS, 'phaser-example', {preload:
 
 function preload() {
 
-    //deploy
+    
 
     game.load.image('button', 'ressources/images/startButton.png');
     game.load.audio('mainMusic', 'ressources/music/mainTheme.mp3');
@@ -73,6 +73,15 @@ var dead = false
 
 var shootSFX;
 
+var speedString
+var speedTXT
+
+var damageString
+var damageTXT
+
+var healthString
+var healthTXT
+
 
 
 
@@ -91,7 +100,7 @@ logo.anchor.setTo(0.5,0.5);
 logo.scale.setTo(0.6,0.6);
 tween = game.add.tween(logo).to( { y: 200 }, 1000, Phaser.Easing.Bounce.Out, true);
     
-    startBTN = game.add.button(game.world.centerX, game.world.centerY, "button", startGame, music);
+    startBTN = game.add.button(game.world.centerX, game.world.centerY, "button", startGame, playMusic);
     startBTN.anchor.setTo(0.5,0.5);
     tween = game.add.tween(startBTN).to( { y: 500 }, 1000, Phaser.Easing.Bounce.Out, true);
 
@@ -147,6 +156,14 @@ bullets = game.add.group();
     bossLifeString = 'BOSS LIFE : ';
     bossTxt = game.add.text(100, 10, bossLifeString + bossLife, { font: '40px Franklin Gothic Heavy', fill: '#fff' });
 
+ speedString = 'Speed : ';
+    speedTXT = game.add.text(1250, 300, speedString + speed, { font: '40px Franklin Gothic Heavy', fill: '#fff' });
+speedTXT.fixedToCamera = true;
+
+damageString = 'Damage : ';
+    damageTXT = game.add.text(1250, 400, damageString + damage, { font: '40px Franklin Gothic Heavy', fill: '#fff' });
+damageTXT.fixedToCamera = true;
+
     lifetxt.fixedToCamera = true;
 bossTxt.fixedToCamera = true;
 
@@ -158,8 +175,7 @@ spawnBoss()
 
 function update() {
 if (!started) return;
-    music = game.add.audio('mainMusic');
-     music.play();
+    
 
     var cam = game.camera;
 
@@ -169,6 +185,8 @@ var mouseY = (game.input.activePointer.y / cam.scale.y) + cam.y;
 
 // Rotate sprite to face mouse
 sprite.rotation = game.physics.arcade.angleToXY(sprite, mouseX, mouseY);
+
+
 
 
     if (game.input.activePointer.isDown) {
@@ -224,6 +242,7 @@ function fire() {
         game.physics.arcade.moveToPointer(bullet, bulletSpeed);
     }
 
+    
 
 }
 
@@ -365,12 +384,9 @@ function respawn(){
     }
 }
 
-function music(){
-    
-   
+function playMusic(){
+    music = game.add.audio('mainMusic');
+
+
+    music.play();
 }
-
-
-
-
-
