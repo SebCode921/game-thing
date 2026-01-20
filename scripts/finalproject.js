@@ -2,7 +2,7 @@ var game = new Phaser.Game(1520, 750, Phaser.CANVAS, 'phaser-example', {preload:
 
 function preload() {
 
-    //deploy
+    
 
     game.load.image('button', 'ressources/images/startButton.png');
     game.load.audio('mainMusic', 'ressources/music/mainTheme.mp3');
@@ -17,6 +17,7 @@ function preload() {
     game.load.image('hp', 'ressources/images/hp.png');
     game.load.image('arrow', 'ressources/images/arrow.png');
     game.load.image('upgrade', 'ressources/images/upgrade.png');
+    game.load.image('controls', 'ressources/images/controls.png');
 
 
 }
@@ -84,6 +85,9 @@ var damageTXT
 var healthString
 var healthTXT
 
+var controls
+
+
 
 
 
@@ -93,9 +97,16 @@ var healthTXT
 
 function create(){
 
-    
+
+
 var bg =game.add.sprite(0, 0, "titleBackground");
 bg.scale.setTo(1,0.8);
+
+var controls = game.add.sprite(1200, 600, "controls");
+controls.anchor.setTo(0.5,0.5);
+controls.scale.setTo(0.5,0.5);
+
+
 
 var logo = game.add.sprite(750, 0, "logo");
 logo.anchor.setTo(0.5,0.5);
@@ -129,10 +140,6 @@ bullets = game.add.group();
     bullets.createMultiple(50, 'bullet');
     bullets.setAll('checkWorldBounds', true);
     bullets.setAll('outOfBoundsKill', true);
-
-    // Prepare shooting sound (loop while mouse is held)
-    shootSFX = game.add.audio('shoot');
-    shootSFX.loop = true;
 
     sprite = game.add.sprite(400, 300, 'arrow');
     sprite.anchor.set(0.5);
@@ -197,13 +204,7 @@ sprite.rotation = game.physics.arcade.angleToXY(sprite, mouseX, mouseY);
 
     if (game.input.activePointer.isDown) {
         fire();
-        if (shootSFX && !shootSFX.isPlaying) {
-            shootSFX.play();
-        }
-    } else {
-        if (shootSFX && shootSFX.isPlaying) {
-            shootSFX.stop();
-        }
+        
     }
 
     game.physics.arcade.overlap(bullets, bosses, collisionHandler, null, this);
@@ -243,14 +244,17 @@ bossTxt.text = bossLifeString + bossLife;
 
 function fire() {
 
+//this just basically checks when you can shoot again
     if (game.time.now > nextFire && bullets.countDead() > 0)
     {
         nextFire = game.time.now + fireRate;
-
+//this just takes a dead bullet (one that went off screen) and re-uses it to reduce lag
+//this reduces lag because its not always making new bullets
         var bullet = bullets.getFirstDead();
-
+//bullet resets to the player position
         bullet.reset(sprite.x - 8, sprite.y - 8);
 
+        //game uses mouse pointer to aim
         game.physics.arcade.moveToPointer(bullet, bulletSpeed);
     }
 
@@ -259,22 +263,20 @@ function fire() {
 }
 
 function render() {
- if (!started) return;
-    game.debug.text('Active Bullets: ' + bullets.countLiving() + ' / ' + bullets.total, 32, 32);
-    game.debug.spriteInfo(sprite, 32, 450);
+ 
 
 }
 
 
 
 function collisionHandler(bullet, boss) {
-    // Bullet disappears
+    
     bullet.kill()
 
-    // Reduce boss health
+    
     bossLife-=damage
 
-    // Update the UI
+    
     bossTxt.text = bossLifeString + bossLife;
 
     boss.alpha = 0.5;
@@ -395,11 +397,3 @@ function respawn(){
     game.camera.scale.set(1); // 1 = normal, 1.2 = zoomed in
     }
 }
-
-function playMusic(){
-    music = game.add.audio('mainMusic');
-
-
-    music.play();
-}
-
