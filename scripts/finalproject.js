@@ -4,22 +4,28 @@ function preload() {
 
     
 
-    game.load.image('button', 'ressources/images/startButton.png');
+    var images = [
+        { key: 'button', src: 'ressources/images/startButton.png' },
+        { key: 'flyer', src: 'ressources/images/boss.png' },
+        { key: 'bullet', src: 'ressources/images/ball.png' },
+        { key: 'background', src: 'ressources/images/background.png' },
+        { key: 'titleBackground', src: 'ressources/images/titleBackground.png' },
+        { key: 'logo', src: 'ressources/images/logo.png' },
+        { key: 'dmg', src: 'ressources/images/dmg.png' },
+        { key: 'spd', src: 'ressources/images/spd.png' },
+        { key: 'hp', src: 'ressources/images/hp.png' },
+        { key: 'arrow', src: 'ressources/images/arrow.png' },
+        { key: 'upgrade', src: 'ressources/images/upgrade.png' },
+        { key: 'controls', src: 'ressources/images/controls.png' }
+    ];
+
+    for (var i = 0; i < images.length; i++) {
+        game.load.image(images[i].key, images[i].src);
+    }
+
+
     game.load.audio('mainMusic', 'ressources/music/mainTheme.mp3');
     game.load.audio('shoot', 'ressources/music/shoot.wav');
-    game.load.image('flyer', 'ressources/images/boss.png');
-    game.load.image('bullet', 'ressources/images/ball.png');
-    game.load.image('background', 'ressources/images/background.png');
-    game.load.image('titleBackground', 'ressources/images/titleBackground.png');
-    game.load.image('logo', 'ressources/images/logo.png');
-    game.load.image('dmg', 'ressources/images/dmg.png');
-    game.load.image('spd', 'ressources/images/spd.png');
-    game.load.image('hp', 'ressources/images/hp.png');
-    game.load.image('arrow', 'ressources/images/arrow.png');
-    game.load.image('upgrade', 'ressources/images/upgrade.png');
-    game.load.image('controls', 'ressources/images/controls.png');
-
-
 }
 //main player
 var sprite;
